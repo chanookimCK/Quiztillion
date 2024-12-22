@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiztillion</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    main {
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+      margin-top: 80px; /* To offset fixed header */
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .description {
+      margin: 15px 0;
+      font-size: 1rem;
+      color: #555;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .buttons button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .hint-btn {
+      background-color: #007BFF;
+      color: white;
+    }
+    .answer-btn {
+      background-color: #28A745;
+      color: white;
+    }
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .popup-content button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>Quiztillion</header>
+  <main>
+    <img id="problemImage" src="" alt="오늘의 문제" />
+    <p id="problemDescription" class="description"></p>
+
+    <div class="buttons">
+      <button class="hint-btn" onclick="showHint()">Hint</button>
+      <button class="answer-btn" onclick="submitAnswer()">Submit Answer</button>
+    </div>
+  </main>
+
+  <div class="popup" id="hintPopup">
+    <div class="popup-content">
+      <p id="hintPopupText"></p>
+      <button onclick="closeHint()">닫기</button>
+    </div>
+  </div>
+
+  <script>
+    // Fetch today's problem
+    async function loadProblem() {
+      try {
+        const response = await fetch('/api/problem');
+        const data = await response.json();
+        document.getElementById('problemImage').src = data.image;
+        document.getElementById('problemDescription').innerText = data.description;
+      } catch (error) {
+        console.error('Error fetching problem:', error);
+      }
+    }
+
+    // Fetch and show hint
+    async function showHint() {
+      try {
+        const response = await fetch('/api/hint');
+        const data = await response.json();
+        document.getElementById('hintPopupText').innerText = data.hint;
+        document.getElementById('hintPopup').style.display = 'flex';
+      } catch (error) {
+        console.error('Error fetching hint:', error);
+      }
+    }
+
+    // Close the hint popup
+    function closeHint() {
+      document.getElementById('hintPopup').style.display = 'none';
+    }
+
+    // Submit the answer
+    async function submitAnswer() {
+      const userAnswer = prompt("Enter your answer:");
+      const nickname = prompt("Enter your nickname:");
+      if (userAnswer && nickname) {
+        try {
+          const response = await fetch('/api/answer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ answer: userAnswer, nickname }),
+          });
+          const data = await response.json();
+          alert(data.message);
+        } catch (error) {
+          console.error('Error submitting answer:', error);
+        }
+      }
+    }
+
+    // Load the problem when the page loads
+    window.onload = loadProblem;
+  </script>
+</body>
+</html>
