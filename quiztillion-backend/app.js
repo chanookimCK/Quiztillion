@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const cron = require("node-cron");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
@@ -150,7 +150,7 @@ cron.schedule("1 1 * * *", () => {
 });
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server running on ${PORT}`);
   });
 
