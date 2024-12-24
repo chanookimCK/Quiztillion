@@ -134,7 +134,7 @@ app.post("/api/answer", (req, res) => {
 });
 
 // Reset at midnight
-cron.schedule("*8 8 * * *", () => {
+cron.schedule("13 8 * * *", () => {
   console.log("Resetting problem and user attempts...");
   userAttempts = {}; // Clear user attempts
 
